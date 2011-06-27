@@ -91,49 +91,16 @@ sub connect {
 	my ($dsn,$user,$pass,$args) = @{ $self->{cnn} };
 	local $args->{RaiseError} = 0;
 	local $args->{PrintError} = 0;
-
-=for rem
-       open my $fn1, '>','/dev/null';
-       open my $fn2, '>','/dev/null';
-       open my $fn3, '>','/dev/null';
-       my $candidate = fileno($fn2);
-       my $next = fileno($fn3);
-       close $fn2;
-       close $fn3;
-       if( $self->{db} = DBI->connect($dsn,$user,$pass,$args) ) {
-               #warn "connect $dsn $user {@{[ %$args  ]}} successful ";
-               open my $fn3, '>','/dev/null';
-               if (fileno $fn3 == $next) {
-                       $self->{fh} = $candidate;
-               } else {
-                       die sprintf "Bad descriptor definition implementation: got too many fds: [ %d -> %d -> %d <> %d -> ? -> %d ]\n",
-                               fileno($fn1), $candidate,$next, fileno($fn3);
-               }
-=cut
-
+	local $args->{mysql_auto_reconnect} = 1;
+	
+	warn "Connecting to $dsn" if  $self->{debug} > 2;
 	if( $self->{db} = DBI->connect($dsn,$user,$pass,$args) ) {
 		#warn "connect $dsn $user {@{[ %$args  ]}} successful ";
 		$self->{fh} = $self->{db}->mysql_fd + 0;
-		warn "socket = $self->{fh}";
+		#warn "socket = $self->{fh}";
 		#exit 255;
-		warn "Connection to $dsn established\n" if $self->{debug} > 2;
+		warn "Connection to $dsn established. fd = $self->{fh}\n" if $self->{debug} > 2;
 		$self->{fh} > 0 or die "Database fh not defined";
-		
-		my $dbh = $self->{db};
-=for rem		
-my $st = $dbh->prepare('SELECT SLEEP(1), 1', { async => 1 });
-$st->execute();
-  until($st->mysql_async_ready) {
-	say 'st=',$st->mysql_async_ready, ' db=',$dbh->mysql_async_ready;
-    say 'not ready yet!';
-    sleep 0.1;
-  }
-warn "db=",$dbh->mysql_async_ready;
-my $rows = $st->mysql_async_result;
-say "got result ".dumper + $rows;
-say dumper $st->fetchall_arrayref;
-exit;
-=cut
 		
 		$self->{lasttry} = undef;
 		$self->{gone} = undef;
@@ -232,7 +199,6 @@ sub  AUTOLOAD {
 	my $args = shift || {};
 	$args->{async} = 1;
 	my $counter = ++$self->{querynum};
-	#warn "prepare call <$query>( @_ ), async status = ".$self->{db}->mysql_async_result if $self->{debug} > 2;
 	warn "prepare call <$query>( @_ )" if $self->{debug} > 2;
 	$self->{current} = [$query,@_];
 	$self->{current_start} = time();
@@ -324,8 +290,6 @@ sub  AUTOLOAD {
 		return;
 	}
 	
-	use Time::HiRes 'time';
-	warn time()." call query $query ".dumper $args;
 	$st = $self->{db}->prepare($query,$args)
 		and $st->execute(@_) 
 		or return do{
