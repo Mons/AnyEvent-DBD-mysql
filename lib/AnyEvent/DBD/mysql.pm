@@ -54,6 +54,7 @@ sub new {
 	$self->{cnn} = [$dsn,$user,$pass,$args];
 	$self->{id} = sprintf '%08x', int $self unless defined $self->{id};
 	$self->{queue_size} = 2 unless defined $self->{queue_size};
+	$self->{reconnect_interval} = 5 unless defined $self->{reconnect_interval};
 	$self->{queue} = [];
 	#$self->{current};
 	#$self->connect;
@@ -190,7 +191,7 @@ sub  AUTOLOAD {
 			printf STDERR "\e[036;1m$self->{id}/Q$counter\e[0m. [\e[03${c};1m%0.4fs\e[0m] < \e[03${c};1m%s\e[0m > ".("\e[031;1mQuery run out of queue size $self->{queue_size}\e[0m")."\n", 0 , $_[0];
 			return callcb( $cb, "Query $_[0] run out of queue size $self->{queue_size}" );
 		} else {
-			warn "Query $_[0] pushed to queue because of current=$self->{current}[0]\n" if $self->{debug} > 1;
+			#warn "Query $_[0] pushed to queue because of current=$self->{current}[0]\n" if $self->{debug} > 1;
 			push @{ $self->{queue} }, [time(), $method, @_,$cb];
 			return;
 		}
@@ -246,6 +247,20 @@ sub  AUTOLOAD {
 				@watchers = ();
 			} else {
 				$st->finish;
+				# TODO: if in transaction?
+				if ($DIE =~ /Lost connection to MySQL server/ and time - $self->{lasttry} > $self->{reconnect_interval}) {
+					undef $st;
+					my $cur = delete $self->{current};
+					my $query = shift @$cur;
+					@watchers = ();
+					if( $self->connect ) {
+						warn "Query $cur->[0] unshifted to queue with '$method' because of reconnect\n" if $self->{debug} > 1;
+						unshift @{ $self->{queue} }, [time(), $method, $query, $args, @$cur, $cb];
+						$self->_dequeue();
+						return;
+					}
+					
+				}
 				callcb($cb,$DIE);
 				undef $st;
 				undef $self->{current};
