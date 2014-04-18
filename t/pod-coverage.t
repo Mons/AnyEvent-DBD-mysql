@@ -2,7 +2,7 @@
 
 use common::sense;
 use Test::More;
-eval "use Test::Pod::Coverage 1.08; use Pod::Coverage 0.18; 1"
+eval "use Test::Pod::Coverage 1.08; use Pod::Coverage 0.18; 0"
 	or diag($@),
 	plan skip_all => "Test::Pod::Coverage 1.08 and Pod::Coverage 0.18 required for testing POD coverage";
 
