@@ -1,20 +1,19 @@
-use inc::Module::Install;
+use 5.008008;
+use ExtUtils::MakeMaker;
+BEGIN{ $ENV{AUTHOR} and require CPAN::Meta and CPAN::Meta->import();  };
 
-my $MI  = $Module::Install::MAIN;
-name           'AnyEvent-DBD-mysql';
-all_from       'lib/AnyEvent/DBD/mysql.pm';
-author         'Mons Anderson <mons@cpan.org>';
-license        'perl';
-
-build_requires 'Test::More';
-build_requires 'lib::abs',  '0.90';
-
-requires 'common::sense',    2;
-# requires 'uni::perl';
-
-auto_provides;
-auto_install;
-
-WriteAll;
-
-print STDERR "Generated makefile for ".$MI->load('name')->name."-".$MI->load('version')->version."\n";
+WriteMakefile(
+	NAME              => 'AnyEvent-DBD-mysql',
+	VERSION_FROM      => 'lib/AnyEvent/DBD/mysql.pm',
+	PREREQ_PM         => {
+		AnyEvent => 5,
+	},
+	ABSTRACT_FROM     => 'lib/AnyEvent/DBD/mysql.pm', # retrieve abstract from module
+	AUTHOR            => 'Mons Anderson <mons@cpan.org>',
+	LICENSE           => 'perl',
+  BUILD_REQUIRES => {
+        'lib::abs' => 0,
+    },
+	#PL_FILES          => { "Kit.pm.PL" => '$(INST_LIB)/AnyEvent/HTTP/Server/Kit.pm' },
+	#clean             => { FILES => "Kit.pm" },
+);

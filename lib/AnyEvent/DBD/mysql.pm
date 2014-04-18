@@ -19,7 +19,7 @@ AnyEvent::DBD::mysql - ...
 
 =cut
 
-our $VERSION = '0.01'; $VERSION = eval($VERSION);
+our $VERSION = '0.02'; $VERSION = eval($VERSION);
 
 =head1 SYNOPSIS
 
