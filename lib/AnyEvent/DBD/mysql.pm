@@ -9,7 +9,7 @@ use common::sense 3;m{
 use Scalar::Util 'weaken';
 use Carp;
 use DBI;
-use DBD::mysql;
+use DBD::mysql 4.019;
 use AE 5;
 use Time::HiRes 'time', 'sleep';
 
