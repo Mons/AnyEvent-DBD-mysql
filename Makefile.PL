@@ -6,7 +6,8 @@ WriteMakefile(
 	NAME              => 'AnyEvent-DBD-mysql',
 	VERSION_FROM      => 'lib/AnyEvent/DBD/mysql.pm',
 	PREREQ_PM         => {
-		AnyEvent => 5,
+		AnyEvent     => 5,
+		'DBD::mysql' => 4.019,
 	},
 	ABSTRACT_FROM     => 'lib/AnyEvent/DBD/mysql.pm', # retrieve abstract from module
 	AUTHOR            => 'Mons Anderson <mons@cpan.org>',
