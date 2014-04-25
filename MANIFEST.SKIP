@@ -1,5 +1,5 @@
 # Avoid version control files.
-\B\.git\b
+\B\.git(?:ignore|)\b
 
 # Avoid Makemaker generated and utility files.
 \bMANIFEST\.bak
@@ -20,13 +20,26 @@
 \#$
 \b\.#
 \.bak$
+\.rpm$
 
 # Avoid Devel::Cover files.
 \bcover_db\b
 
 # Avoid local testing/dist files
-
+^MYMETA\.
+^libs/
 ^dist/
 ^makeall\.sh$
 ^tmp/
+^fluor-.*
+Kit\.pm$
+^xt/
+^ex/
+^topdir-
+makerpm
+^removed/
+^tarantool/
+^cloud-sender/
+^specs/
+.gitmodules
 ^AnyEvent-DBD-mysql-.*

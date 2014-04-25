@@ -9,7 +9,7 @@ use common::sense 3;m{
 use Scalar::Util 'weaken';
 use Carp;
 use DBI;
-use DBD::mysql;
+use DBD::mysql 4.019;
 use AE 5;
 use Time::HiRes 'time', 'sleep';
 
@@ -19,7 +19,7 @@ AnyEvent::DBD::mysql - ...
 
 =cut
 
-our $VERSION = '0.01'; $VERSION = eval($VERSION);
+our $VERSION = '0.02'; $VERSION = eval($VERSION);
 
 =head1 SYNOPSIS
 

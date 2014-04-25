@@ -1,0 +1,22 @@
+---
+abstract: '...'
+author:
+  - 'Mons Anderson <mons@cpan.org>'
+build_requires:
+  lib::abs: 0
+configure_requires:
+  ExtUtils::MakeMaker: 0
+dynamic_config: 0
+generated_by: 'ExtUtils::MakeMaker version 6.82, CPAN::Meta::Converter version 2.132830'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: AnyEvent-DBD-mysql
+no_index:
+  directory:
+    - t
+    - inc
+requires:
+  AnyEvent: 5
+version: 0.02
